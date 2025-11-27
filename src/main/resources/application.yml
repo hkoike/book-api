@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bookdb
+    username: bookuser
+    password: bookpass
+    driver-class-name: org.postgresql.Driver
+  jooq:
+    sql-dialect: POSTGRES
+  docker:
+    compose:
+      enabled: false
+  application:
+    name: book-api
