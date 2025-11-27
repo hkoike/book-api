@@ -1,9 +1,11 @@
 HELP.md
 .gradle
+gradle/
+gradlew.bat
 build/
-!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+.gitattributes
 
 ### STS ###
 .apt_generated
