@@ -10,6 +10,7 @@ plugins {
 group = 'com.example.hkoike.codingtest'
 version = '0.0.1-SNAPSHOT'
 description = 'coding test'
+ext["jooq.version"] = "3.20.5"
 
 java {
     toolchain {
@@ -90,4 +91,22 @@ sourceSets {
             srcDir "$buildDir/generated-sources/jooq"
         }
     }
+}
+
+// jOOQ のコード生成を Kotlin/Java のコンパイルより先に実行させる
+tasks.named('compileKotlin') {
+    dependsOn('jooqCodegen')
+}
+
+tasks.named('compileJava') {
+    dependsOn('jooqCodegen')
+}
+
+// ktlint も jOOQ の出力を見に行くので、その前に jOOQ を動かす
+tasks.named('runKtlintCheckOverMainSourceSet') {
+    dependsOn('jooqCodegen')
+}
+
+tasks.named('ktlintMainSourceSetCheck') {
+    dependsOn('jooqCodegen')
 }
