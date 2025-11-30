@@ -28,6 +28,13 @@ class BookService(
         return bookRepository.save(toSave)
     }
 
+    fun getBooksByAuthors(authorIds: List<Long>): List<Book> {
+        require(authorIds.isNotEmpty()) { "authorIds must not be empty" }
+        require(authorIds.all { it > 0 }) { "authorIds must be positive" }
+
+        return bookRepository.findByAuthorIds(authorIds)
+    }
+
     private fun validateBook(book: Book) {
         require(book.price >= 0) { "price must be over 0" }
         require(book.authorIds.isNotEmpty()) { "book must have at least one author" }

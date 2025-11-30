@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import kotlin.test.assertTrue
 
 class BookServiceTest {
 
@@ -112,6 +113,69 @@ class BookServiceTest {
             val updateRequest = existing.copy(status = PublicationStatus.UNPUBLISHED)
             assertThrows(IllegalStateException::class.java) {
                 bookService.updateBook(2L, updateRequest)
+            }
+        }
+    }
+
+    @Nested
+    inner class GetBooksByAuthors {
+        @Test
+        fun `authorsに紐づく本が複数存在する場合は全て返す`() {
+            val authorIds = listOf(1L, 2L)
+
+            val books = listOf(
+                Book(
+                    id = 1L,
+                    title = "book1",
+                    price = 1000,
+                    status = PublicationStatus.UNPUBLISHED,
+                    publishedAt = LocalDate.now(),
+                    authorIds = listOf(1L),
+                ),
+                Book(
+                    id = 2L,
+                    title = "book2",
+                    price = 2000,
+                    status = PublicationStatus.PUBLISHED,
+                    publishedAt = LocalDate.now(),
+                    authorIds = listOf(2L, 3L),
+                ),
+            )
+
+            every { bookRepository.findByAuthorIds(authorIds) } returns books
+
+            val result = bookService.getBooksByAuthors(authorIds)
+
+            assertEquals(2, result.size)
+            assertEquals(listOf(1L, 2L), listOf(result[0].id, result[1].id))
+        }
+
+        @Test
+        fun `著者に紐づく本が存在しない場合は空リストを返す`() {
+            val authorIds = listOf(99L, 100L)
+            every { bookRepository.findByAuthorIds(authorIds) } returns emptyList()
+
+            val result = bookService.getBooksByAuthors(authorIds)
+
+            assertTrue(result.isEmpty())
+        }
+
+        @Test
+        fun `authorIdsが空の場合は例外を投げる`() {
+            val authorIds = emptyList<Long>()
+
+            assertThrows(IllegalArgumentException::class.java) {
+                bookService.getBooksByAuthors(authorIds)
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = [0L, -1L, -10L])
+        fun `authorIdsに0以下が含まれる場合は例外を投げる`(invalidId: Long) {
+            val authorIds = listOf(1L, invalidId, 2L)
+
+            assertThrows(IllegalArgumentException::class.java) {
+                bookService.getBooksByAuthors(authorIds)
             }
         }
     }
