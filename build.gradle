@@ -32,6 +32,7 @@ dependencies {
     implementation "org.postgresql:postgresql"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-jooq-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
