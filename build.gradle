@@ -34,6 +34,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-jooq-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+    testImplementation "io.mockk:mockk:1.14.6"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     jooqCodegen "org.postgresql:postgresql"
