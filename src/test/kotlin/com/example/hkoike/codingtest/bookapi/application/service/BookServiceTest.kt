@@ -5,13 +5,13 @@ import com.example.hkoike.codingtest.bookapi.domain.model.PublicationStatus
 import com.example.hkoike.codingtest.bookapi.domain.repository.BookRepository
 import io.mockk.every
 import io.mockk.mockk
+import java.time.LocalDate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import java.time.LocalDate
 
 class BookServiceTest {
 
@@ -33,7 +33,7 @@ class BookServiceTest {
             )
 
             val saved = book.copy(id = 10L)
-            every { bookRepository.save(book) } returns saved
+            every { bookRepository.save(any()) } returns saved
 
             val result = bookService.createBook(book)
             assertEquals(10L, result.id)
@@ -110,9 +110,6 @@ class BookServiceTest {
             every { bookRepository.findById(2L) } returns existing
 
             val updateRequest = existing.copy(status = PublicationStatus.UNPUBLISHED)
-            val updated = updateRequest
-            every { bookRepository.save(updateRequest) } returns updated
-
             assertThrows(IllegalStateException::class.java) {
                 bookService.updateBook(2L, updateRequest)
             }
