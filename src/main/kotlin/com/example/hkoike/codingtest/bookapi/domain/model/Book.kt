@@ -7,6 +7,6 @@ data class Book(
     val title: String,
     val price: Int,
     val status: PublicationStatus,
-    val publishedAt: LocalDate,
+    val publishedAt: LocalDate?,
     val authorIds: List<Long>,
 )
