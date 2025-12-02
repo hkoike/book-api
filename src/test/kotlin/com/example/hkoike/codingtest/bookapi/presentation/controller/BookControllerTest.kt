@@ -1,11 +1,15 @@
 package com.example.hkoike.codingtest.bookapi.presentation.controller
 
 import com.example.hkoike.codingtest.bookapi.application.service.BookService
+import com.example.hkoike.codingtest.bookapi.domain.exception.BookNotFoundException
+import com.example.hkoike.codingtest.bookapi.domain.exception.InvalidBookOperationException
 import com.example.hkoike.codingtest.bookapi.domain.model.Book
 import com.example.hkoike.codingtest.bookapi.domain.model.PublicationStatus
+import java.time.LocalDate
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.given
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
@@ -15,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
-import java.time.LocalDate
 
 @WebMvcTest(BookController::class)
 class BookControllerTest {
@@ -164,6 +167,66 @@ class BookControllerTest {
                 jsonPath("$.price") { value(4000) }
                 jsonPath("$.status") { value("UNPUBLISHED") }
                 jsonPath("$.authorIds[0]") { value(3) }
+            }
+    }
+
+    @Test
+    fun `PUT 存在しないIDなら404を返す`() {
+        val id = 999L
+
+        given(bookService.updateBook(eq(id), any()))
+            .willThrow(BookNotFoundException(id))
+
+        val requestBody = """
+        {
+          "title": "updated",
+          "price": 1200,
+          "status": "PUBLISHED",
+          "publishedAt": "2024-01-01",
+          "authorIds": [1]
+        }
+    """.trimIndent()
+
+        mockMvc.put("/v1/books/{id}", id) {
+            contentType = MediaType.APPLICATION_JSON
+            content = requestBody
+            accept = MediaType.APPLICATION_JSON
+        }
+            .andExpect {
+                status { isNotFound() }
+                jsonPath("$.status") { value(404) }
+                jsonPath("$.error") { value("Not Found") }
+                jsonPath("$.message") { value("Book not found. id=$id") }
+            }
+    }
+
+    @Test
+    fun `PUT 出版済み→未出版は409を返す`() {
+        val id = 1L
+
+        given(bookService.updateBook(eq(id), any()))
+            .willThrow(InvalidBookOperationException("published book cannot be reverted to unpublished"))
+
+        val requestBody = """
+        {
+          "title": "book",
+          "price": 1000,
+          "status": "UNPUBLISHED",
+          "publishedAt": "2024-01-01",
+          "authorIds": [1]
+        }
+    """.trimIndent()
+
+        mockMvc.put("/v1/books/{id}", id) {
+            contentType = MediaType.APPLICATION_JSON
+            content = requestBody
+            accept = MediaType.APPLICATION_JSON
+        }
+            .andExpect {
+                status { isConflict() }
+                jsonPath("$.status") { value(409) }
+                jsonPath("$.error") { value("Conflict") }
+                jsonPath("$.message") { value("published book cannot be reverted to unpublished") }
             }
     }
 }

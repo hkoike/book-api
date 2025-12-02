@@ -1,5 +1,7 @@
 package com.example.hkoike.codingtest.bookapi.application.service
 
+import com.example.hkoike.codingtest.bookapi.domain.exception.BookNotFoundException
+import com.example.hkoike.codingtest.bookapi.domain.exception.InvalidBookOperationException
 import com.example.hkoike.codingtest.bookapi.domain.model.Book
 import com.example.hkoike.codingtest.bookapi.domain.model.PublicationStatus
 import com.example.hkoike.codingtest.bookapi.domain.repository.BookRepository
@@ -18,7 +20,7 @@ class BookService(
 
     fun updateBook(id: Long, request: Book): Book {
         val existing = bookRepository.findById(id)
-                        ?: throw IllegalArgumentException("Book not found: $id")
+                        ?: throw BookNotFoundException(id)
 
         validateBook(request)
         validateStatusChange(existing.status, request.status)
@@ -45,7 +47,7 @@ class BookService(
         next: PublicationStatus,
     ) {
         if (current == PublicationStatus.PUBLISHED && next == PublicationStatus.UNPUBLISHED) {
-            throw IllegalStateException("PUBLISHED book cannot be reverted to UNPUBLISHED")
+            throw InvalidBookOperationException("PUBLISHED book cannot be reverted to UNPUBLISHED")
         }
     }
 }

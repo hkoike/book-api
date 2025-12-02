@@ -1,5 +1,6 @@
 package com.example.hkoike.codingtest.bookapi.application.service
 
+import com.example.hkoike.codingtest.bookapi.domain.exception.InvalidBookOperationException
 import com.example.hkoike.codingtest.bookapi.domain.model.Book
 import com.example.hkoike.codingtest.bookapi.domain.model.PublicationStatus
 import com.example.hkoike.codingtest.bookapi.domain.repository.BookRepository
@@ -111,7 +112,7 @@ class BookServiceTest {
             every { bookRepository.findById(2L) } returns existing
 
             val updateRequest = existing.copy(status = PublicationStatus.UNPUBLISHED)
-            assertThrows(IllegalStateException::class.java) {
+            assertThrows(InvalidBookOperationException::class.java) {
                 bookService.updateBook(2L, updateRequest)
             }
         }
