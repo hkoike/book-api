@@ -3,9 +3,8 @@ package com.example.hkoike.codingtest.bookapi.presentation.controller
 import com.example.hkoike.codingtest.bookapi.application.service.BookService
 import com.example.hkoike.codingtest.bookapi.presentation.dto.BookRequest
 import com.example.hkoike.codingtest.bookapi.presentation.dto.BookResponse
-import com.example.hkoike.codingtest.bookapi.presentation.dto.toBook
+import com.example.hkoike.codingtest.bookapi.presentation.mapper.BookMapper.toBook
 import com.example.hkoike.codingtest.bookapi.presentation.mapper.BookMapper.toResponse
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
