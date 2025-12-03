@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController
 class AuthorController(
     private val authorService: AuthorService,
 ) {
-
     @PostMapping
     fun createAuthor(
         @RequestBody request: AuthorRequest,
     ): ResponseEntity<AuthorResponse> {
         val author = AuthorMapper.toAuthor(request)
         val saved = authorService.createAuthor(author)
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+            .status(HttpStatus.OK)
             .body(AuthorMapper.toResponse(saved))
     }
 

@@ -13,11 +13,9 @@ import java.time.LocalDate
 @SpringBootTest
 @Transactional
 class JooqAuthorRepositoryTest(
-
     @Autowired
     private val authorRepository: AuthorRepository,
 ) {
-
     @Test
     fun `save で著者を新規登録し findById で取得できる`() {
         val author =

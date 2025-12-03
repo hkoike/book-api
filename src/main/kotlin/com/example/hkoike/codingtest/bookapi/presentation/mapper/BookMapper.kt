@@ -8,8 +8,12 @@ import java.time.LocalDate
 
 object BookMapper {
     fun BookRequest.toBook(id: Long = 0L): Book {
-        val copiedPublishedAt = if (publishedAt == null && status == PublicationStatus.PUBLISHED)
-            LocalDate.now() else publishedAt;
+        val copiedPublishedAt =
+            if (publishedAt == null && status == PublicationStatus.PUBLISHED) {
+                LocalDate.now()
+            } else {
+                publishedAt
+            }
 
         return Book(
             id = id,

@@ -2,10 +2,7 @@ package com.example.hkoike.codingtest.bookapi.presentation.controller
 
 import com.example.hkoike.codingtest.bookapi.application.service.AuthorService
 import com.example.hkoike.codingtest.bookapi.domain.model.Author
-import com.example.hkoike.codingtest.bookapi.presentation.dto.AuthorRequest
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
@@ -20,7 +17,6 @@ import java.time.LocalDate
 
 @WebMvcTest(AuthorController::class)
 class AuthorControllerTest {
-
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -29,12 +25,13 @@ class AuthorControllerTest {
 
     @Test
     fun `POST v1-authors 正常に著者が作成される`() {
-        val requestJson = """
+        val requestJson =
+            """
             {
                 "name": "author1",
                 "birthDate": "1990-01-01"
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val saved =
             Author(
@@ -45,28 +42,30 @@ class AuthorControllerTest {
 
         whenever(authorService.createAuthor(any())).thenReturn(saved)
 
-        mockMvc.post("/v1/authors") {
-            contentType = MediaType.APPLICATION_JSON
-            accept = MediaType.APPLICATION_JSON
-            content = requestJson
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.id") { value(1) }
-            jsonPath("$.name") { value("author1") }
-            jsonPath("$.birthDate") { value("1990-01-01") }
-        }
+        mockMvc
+            .post("/v1/authors") {
+                contentType = MediaType.APPLICATION_JSON
+                accept = MediaType.APPLICATION_JSON
+                content = requestJson
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.id") { value(1) }
+                jsonPath("$.name") { value("author1") }
+                jsonPath("$.birthDate") { value("1990-01-01") }
+            }
     }
 
     @Test
     fun `PUT v1-authors-id 正常に著者が更新される`() {
         val id = 5L
 
-        val requestJson = """
+        val requestJson =
+            """
             {
                 "name": "updated author",
                 "birthDate": "1985-05-05"
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val updated =
             Author(
@@ -78,15 +77,16 @@ class AuthorControllerTest {
         whenever(authorService.updateAuthor(eq(id), any()))
             .thenReturn(updated)
 
-        mockMvc.put("/v1/authors/{id}", id) {
-            contentType = MediaType.APPLICATION_JSON
-            accept = MediaType.APPLICATION_JSON
-            content = requestJson
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.id") { value(id.toInt()) }
-            jsonPath("$.name") { value("updated author") }
-            jsonPath("$.birthDate") { value("1985-05-05") }
-        }
+        mockMvc
+            .put("/v1/authors/{id}", id) {
+                contentType = MediaType.APPLICATION_JSON
+                accept = MediaType.APPLICATION_JSON
+                content = requestJson
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.id") { value(id.toInt()) }
+                jsonPath("$.name") { value("updated author") }
+                jsonPath("$.birthDate") { value("1985-05-05") }
+            }
     }
 }

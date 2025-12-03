@@ -9,14 +9,16 @@ import java.time.LocalDate
 class AuthorService(
     private val authorRepository: AuthorRepository,
 ) {
-
     fun createAuthor(author: Author): Author {
         validateAuthor(author)
 
         return authorRepository.save(author)
     }
 
-    fun updateAuthor(id: Long, author: Author): Author {
+    fun updateAuthor(
+        id: Long,
+        author: Author,
+    ): Author {
         validateAuthor(author)
 
         val existing =

@@ -11,14 +11,12 @@ import org.springframework.stereotype.Repository
 class JooqAuthorRepository(
     private val dsl: DSLContext,
 ) : AuthorRepository {
-
-    override fun save(author: Author): Author {
-        return if (author.id == 0L) {
+    override fun save(author: Author): Author =
+        if (author.id == 0L) {
             insert(author)
         } else {
             update(author)
         }
-    }
 
     override fun findById(id: Long): Author? {
         val record =
@@ -43,7 +41,8 @@ class JooqAuthorRepository(
             val tx = DSL.using(cfg)
 
             val id =
-                tx.insertInto(AUTHOR)
+                tx
+                    .insertInto(AUTHOR)
                     .set(AUTHOR.NAME, author.name)
                     .set(AUTHOR.BIRTH_DATE, author.birthDate)
                     .returningResult(AUTHOR.ID)
@@ -58,7 +57,8 @@ class JooqAuthorRepository(
         dsl.transactionResult { cfg ->
             val tx = DSL.using(cfg)
 
-            tx.update(AUTHOR)
+            tx
+                .update(AUTHOR)
                 .set(AUTHOR.NAME, author.name)
                 .set(AUTHOR.BIRTH_DATE, author.birthDate)
                 .where(AUTHOR.ID.eq(author.id))

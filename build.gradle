@@ -61,10 +61,10 @@ ktlint {
     ignoreFailures.set(false)
 }
 
-// ★ ここから jOOQ 設定（XML ではなく Gradle DSL で書く）
+// jOOQ 設定
 jooq {
     configuration {
-        // logging = org.jooq.meta.jaxb.Logging.WARN // 必要なら
+        // logging = org.jooq.meta.jaxb.Logging.WARN
 
         jdbc {
             driver = "org.postgresql.Driver"

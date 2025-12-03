@@ -11,16 +11,19 @@ import org.springframework.stereotype.Service
 class BookService(
     private val bookRepository: BookRepository,
 ) {
-
     fun createBook(book: Book): Book {
         validateBook(book)
 
         return bookRepository.save(book)
     }
 
-    fun updateBook(id: Long, request: Book): Book {
-        val existing = bookRepository.findById(id)
-                        ?: throw BookNotFoundException(id)
+    fun updateBook(
+        id: Long,
+        request: Book,
+    ): Book {
+        val existing =
+            bookRepository.findById(id)
+                ?: throw BookNotFoundException(id)
 
         validateBook(request)
         validateStatusChange(existing.status, request.status)

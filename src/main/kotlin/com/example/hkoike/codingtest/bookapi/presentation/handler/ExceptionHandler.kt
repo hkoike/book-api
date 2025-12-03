@@ -11,11 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class ExceptionHandler {
-
     @ExceptionHandler(BookNotFoundException::class)
-    fun handleBookNotFound(
-        ex: BookNotFoundException
-    ): ResponseEntity<ErrorResponse> =
+    fun handleBookNotFound(ex: BookNotFoundException): ResponseEntity<ErrorResponse> =
         ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(
@@ -27,9 +24,7 @@ class ExceptionHandler {
             )
 
     @ExceptionHandler(InvalidBookOperationException::class)
-    fun handleInvalidBookOperation(
-        ex: InvalidBookOperationException
-    ): ResponseEntity<ErrorResponse> =
+    fun handleInvalidBookOperation(ex: InvalidBookOperationException): ResponseEntity<ErrorResponse> =
         ResponseEntity
             .status(HttpStatus.CONFLICT) // 409
             .body(
@@ -41,9 +36,7 @@ class ExceptionHandler {
             )
 
     @ExceptionHandler(IllegalArgumentException::class, MethodArgumentNotValidException::class)
-    fun handleBadRequest(
-        ex: Exception,
-    ): ResponseEntity<ErrorResponse> =
+    fun handleBadRequest(ex: Exception): ResponseEntity<ErrorResponse> =
         ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(

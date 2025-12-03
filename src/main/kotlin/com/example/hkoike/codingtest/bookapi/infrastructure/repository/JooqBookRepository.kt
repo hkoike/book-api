@@ -3,7 +3,6 @@ package com.example.hkoike.codingtest.bookapi.infrastructure.repository
 import com.example.hkoike.codingtest.bookapi.domain.model.Book
 import com.example.hkoike.codingtest.bookapi.domain.model.PublicationStatus
 import com.example.hkoike.codingtest.bookapi.domain.repository.BookRepository
-import com.example.hkoike.codingtest.bookapi.jooq.tables.Author.AUTHOR
 import com.example.hkoike.codingtest.bookapi.jooq.tables.Book.BOOK
 import com.example.hkoike.codingtest.bookapi.jooq.tables.BookAuthor.BOOK_AUTHOR
 import org.jooq.DSLContext
@@ -15,14 +14,12 @@ import java.time.LocalDate
 class JooqBookRepository(
     private val dsl: DSLContext,
 ) : BookRepository {
-
-    override fun save(book: Book): Book {
-        return if (book.id == 0L) {
+    override fun save(book: Book): Book =
+        if (book.id == 0L) {
             insert(book)
         } else {
             update(book)
         }
-    }
 
     override fun findById(id: Long): Book? {
         // book と book_author を JOIN して 1冊＋複数著者 を取得
@@ -127,7 +124,8 @@ class JooqBookRepository(
 
             // book を insert
             val bookId =
-                tx.insertInto(BOOK)
+                tx
+                    .insertInto(BOOK)
                     .set(BOOK.TITLE, book.title)
                     .set(BOOK.PRICE, book.price)
                     .set(BOOK.STATUS, book.status.name)
@@ -139,13 +137,15 @@ class JooqBookRepository(
 
             // 中間テーブルに authorIds を登録
             if (book.authorIds.isNotEmpty()) {
-                tx.batch(
-                    book.authorIds.map { authorId ->
-                        tx.insertInto(BOOK_AUTHOR)
-                            .set(BOOK_AUTHOR.BOOK_ID, bookId)
-                            .set(BOOK_AUTHOR.AUTHOR_ID, authorId)
-                    },
-                ).execute()
+                tx
+                    .batch(
+                        book.authorIds.map { authorId ->
+                            tx
+                                .insertInto(BOOK_AUTHOR)
+                                .set(BOOK_AUTHOR.BOOK_ID, bookId)
+                                .set(BOOK_AUTHOR.AUTHOR_ID, authorId)
+                        },
+                    ).execute()
             }
 
             book.copy(id = bookId)
@@ -156,7 +156,8 @@ class JooqBookRepository(
             val tx = DSL.using(cfg)
 
             // book 本体を更新
-            tx.update(BOOK)
+            tx
+                .update(BOOK)
                 .set(BOOK.TITLE, book.title)
                 .set(BOOK.PRICE, book.price)
                 .set(BOOK.STATUS, book.status.name)
@@ -165,18 +166,21 @@ class JooqBookRepository(
                 .execute()
 
             // 既存の関連を削除して、authorIds を差し替え
-            tx.deleteFrom(BOOK_AUTHOR)
+            tx
+                .deleteFrom(BOOK_AUTHOR)
                 .where(BOOK_AUTHOR.BOOK_ID.eq(book.id))
                 .execute()
 
             if (book.authorIds.isNotEmpty()) {
-                tx.batch(
-                    book.authorIds.map { authorId ->
-                        tx.insertInto(BOOK_AUTHOR)
-                            .set(BOOK_AUTHOR.BOOK_ID, book.id)
-                            .set(BOOK_AUTHOR.AUTHOR_ID, authorId)
-                    },
-                ).execute()
+                tx
+                    .batch(
+                        book.authorIds.map { authorId ->
+                            tx
+                                .insertInto(BOOK_AUTHOR)
+                                .set(BOOK_AUTHOR.BOOK_ID, book.id)
+                                .set(BOOK_AUTHOR.AUTHOR_ID, authorId)
+                        },
+                    ).execute()
             }
 
             book

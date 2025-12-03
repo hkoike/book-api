@@ -5,7 +5,10 @@ import com.example.hkoike.codingtest.bookapi.presentation.dto.AuthorRequest
 import com.example.hkoike.codingtest.bookapi.presentation.dto.AuthorResponse
 
 object AuthorMapper {
-    fun toAuthor(request: AuthorRequest, id: Long = 0L): Author =
+    fun toAuthor(
+        request: AuthorRequest,
+        id: Long = 0L,
+    ): Author =
         Author(
             id = id,
             name = request.name,

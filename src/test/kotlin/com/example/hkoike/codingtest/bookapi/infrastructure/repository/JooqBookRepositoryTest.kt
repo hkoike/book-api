@@ -7,7 +7,6 @@ import com.example.hkoike.codingtest.bookapi.domain.repository.BookRepository
 import com.example.hkoike.codingtest.bookapi.jooq.tables.Author.AUTHOR
 import com.example.hkoike.codingtest.bookapi.jooq.tables.Book.BOOK
 import com.example.hkoike.codingtest.bookapi.jooq.tables.BookAuthor.BOOK_AUTHOR
-import io.mockk.InternalPlatformDsl.toStr
 import org.jooq.DSLContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,7 +26,6 @@ class JooqBookRepositoryTest(
     @Autowired private val bookRepository: BookRepository,
     @Autowired private val dsl: DSLContext,
 ) {
-
     @BeforeEach
     fun setUp() {
         // テーブルをきれいにしておく（FKの順番に注意）
@@ -37,7 +35,8 @@ class JooqBookRepositoryTest(
     }
 
     private fun insertAuthor(name: String): Long =
-        dsl.insertInto(AUTHOR)
+        dsl
+            .insertInto(AUTHOR)
             .set(AUTHOR.NAME, name)
             .set(AUTHOR.BIRTH_DATE, LocalDate.of(2000, 1, 1))
             .returningResult(AUTHOR.ID)

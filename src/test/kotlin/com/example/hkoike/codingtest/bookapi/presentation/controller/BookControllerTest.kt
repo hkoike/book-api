@@ -5,7 +5,6 @@ import com.example.hkoike.codingtest.bookapi.domain.exception.BookNotFoundExcept
 import com.example.hkoike.codingtest.bookapi.domain.exception.InvalidBookOperationException
 import com.example.hkoike.codingtest.bookapi.domain.model.Book
 import com.example.hkoike.codingtest.bookapi.domain.model.PublicationStatus
-import java.time.LocalDate
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -19,10 +18,10 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
+import java.time.LocalDate
 
 @WebMvcTest(BookController::class)
 class BookControllerTest {
-
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -34,32 +33,33 @@ class BookControllerTest {
         // given
         val authorIds = listOf(1L, 2L)
 
-        val books = listOf(
-            Book(
-                id = 1L,
-                title = "book1",
-                price = 1000,
-                status = PublicationStatus.UNPUBLISHED,
-                publishedAt = LocalDate.of(2024, 1, 1),
-                authorIds = listOf(1L),
-            ),
-            Book(
-                id = 2L,
-                title = "book2",
-                price = 2000,
-                status = PublicationStatus.PUBLISHED,
-                publishedAt = LocalDate.of(2024, 2, 1),
-                authorIds = listOf(2L, 3L),
-            ),
-        )
+        val books =
+            listOf(
+                Book(
+                    id = 1L,
+                    title = "book1",
+                    price = 1000,
+                    status = PublicationStatus.UNPUBLISHED,
+                    publishedAt = LocalDate.of(2024, 1, 1),
+                    authorIds = listOf(1L),
+                ),
+                Book(
+                    id = 2L,
+                    title = "book2",
+                    price = 2000,
+                    status = PublicationStatus.PUBLISHED,
+                    publishedAt = LocalDate.of(2024, 2, 1),
+                    authorIds = listOf(2L, 3L),
+                ),
+            )
 
         whenever(bookService.getBooksByAuthors(authorIds)).thenReturn(books)
 
-        mockMvc.get("/v1/books") {
-            param("authorIds", "1", "2")
-            accept = MediaType.APPLICATION_JSON
-        }
-            .andExpect {
+        mockMvc
+            .get("/v1/books") {
+                param("authorIds", "1", "2")
+                accept = MediaType.APPLICATION_JSON
+            }.andExpect {
                 status { isOk() }
 
                 // 配列の長さ = 2 件
@@ -85,7 +85,8 @@ class BookControllerTest {
     @Test
     fun `本を登録して返す`() {
         // given
-        val requestJson = """
+        val requestJson =
+            """
             {
               "title": "new book",
               "price": 3000,
@@ -93,28 +94,29 @@ class BookControllerTest {
               "publishedAt": "2024-03-01",
               "authorIds": [1, 2]
             }
-        """.trimIndent()
+            """.trimIndent()
 
-        val createdBook = Book(
-            id = 10L,
-            title = "new book",
-            price = 3000,
-            status = PublicationStatus.PUBLISHED,
-            publishedAt = LocalDate.of(2024, 3, 1),
-            authorIds = listOf(1L, 2L),
-        )
+        val createdBook =
+            Book(
+                id = 10L,
+                title = "new book",
+                price = 3000,
+                status = PublicationStatus.PUBLISHED,
+                publishedAt = LocalDate.of(2024, 3, 1),
+                authorIds = listOf(1L, 2L),
+            )
 
         // Book 引数は any() でマッチさせる
         @Suppress("UNCHECKED_CAST")
         whenever(bookService.createBook(any())).thenReturn(createdBook)
 
         // when & then
-        mockMvc.post("/v1/books") {
-            contentType = MediaType.APPLICATION_JSON
-            accept = MediaType.APPLICATION_JSON
-            content = requestJson
-        }
-            .andExpect {
+        mockMvc
+            .post("/v1/books") {
+                contentType = MediaType.APPLICATION_JSON
+                accept = MediaType.APPLICATION_JSON
+                content = requestJson
+            }.andExpect {
                 status { isOk() }
 
                 jsonPath("$.id") { value(10) }
@@ -131,7 +133,8 @@ class BookControllerTest {
         // given
         val bookId = 20L
 
-        val requestJson = """
+        val requestJson =
+            """
             {
               "title": "updated title",
               "price": 4000,
@@ -139,27 +142,28 @@ class BookControllerTest {
               "publishedAt": "2024-04-01",
               "authorIds": [3]
             }
-        """.trimIndent()
+            """.trimIndent()
 
-        val updatedBook = Book(
-            id = bookId,
-            title = "updated title",
-            price = 4000,
-            status = PublicationStatus.UNPUBLISHED,
-            publishedAt = LocalDate.of(2024, 4, 1),
-            authorIds = listOf(3L),
-        )
+        val updatedBook =
+            Book(
+                id = bookId,
+                title = "updated title",
+                price = 4000,
+                status = PublicationStatus.UNPUBLISHED,
+                publishedAt = LocalDate.of(2024, 4, 1),
+                authorIds = listOf(3L),
+            )
 
         @Suppress("UNCHECKED_CAST")
         whenever(bookService.updateBook(eq(bookId), any())).thenReturn(updatedBook)
 
         // when & then
-        mockMvc.put("/v1/books/{id}", bookId) {
-            contentType = MediaType.APPLICATION_JSON
-            accept = MediaType.APPLICATION_JSON
-            content = requestJson
-        }
-            .andExpect {
+        mockMvc
+            .put("/v1/books/{id}", bookId) {
+                contentType = MediaType.APPLICATION_JSON
+                accept = MediaType.APPLICATION_JSON
+                content = requestJson
+            }.andExpect {
                 status { isOk() }
 
                 jsonPath("$.id") { value(bookId.toInt()) }
@@ -177,22 +181,23 @@ class BookControllerTest {
         given(bookService.updateBook(eq(id), any()))
             .willThrow(BookNotFoundException(id))
 
-        val requestBody = """
-        {
-          "title": "updated",
-          "price": 1200,
-          "status": "PUBLISHED",
-          "publishedAt": "2024-01-01",
-          "authorIds": [1]
-        }
-    """.trimIndent()
+        val requestBody =
+            """
+            {
+              "title": "updated",
+              "price": 1200,
+              "status": "PUBLISHED",
+              "publishedAt": "2024-01-01",
+              "authorIds": [1]
+            }
+            """.trimIndent()
 
-        mockMvc.put("/v1/books/{id}", id) {
-            contentType = MediaType.APPLICATION_JSON
-            content = requestBody
-            accept = MediaType.APPLICATION_JSON
-        }
-            .andExpect {
+        mockMvc
+            .put("/v1/books/{id}", id) {
+                contentType = MediaType.APPLICATION_JSON
+                content = requestBody
+                accept = MediaType.APPLICATION_JSON
+            }.andExpect {
                 status { isNotFound() }
                 jsonPath("$.status") { value(404) }
                 jsonPath("$.error") { value("Not Found") }
@@ -207,22 +212,23 @@ class BookControllerTest {
         given(bookService.updateBook(eq(id), any()))
             .willThrow(InvalidBookOperationException("published book cannot be reverted to unpublished"))
 
-        val requestBody = """
-        {
-          "title": "book",
-          "price": 1000,
-          "status": "UNPUBLISHED",
-          "publishedAt": "2024-01-01",
-          "authorIds": [1]
-        }
-    """.trimIndent()
+        val requestBody =
+            """
+            {
+              "title": "book",
+              "price": 1000,
+              "status": "UNPUBLISHED",
+              "publishedAt": "2024-01-01",
+              "authorIds": [1]
+            }
+            """.trimIndent()
 
-        mockMvc.put("/v1/books/{id}", id) {
-            contentType = MediaType.APPLICATION_JSON
-            content = requestBody
-            accept = MediaType.APPLICATION_JSON
-        }
-            .andExpect {
+        mockMvc
+            .put("/v1/books/{id}", id) {
+                contentType = MediaType.APPLICATION_JSON
+                content = requestBody
+                accept = MediaType.APPLICATION_JSON
+            }.andExpect {
                 status { isConflict() }
                 jsonPath("$.status") { value(409) }
                 jsonPath("$.error") { value("Conflict") }

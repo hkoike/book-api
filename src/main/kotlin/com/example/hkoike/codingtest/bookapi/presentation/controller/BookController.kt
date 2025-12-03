@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController
 class BookController(
     private val bookService: BookService,
 ) {
-
     @GetMapping
     fun getBooksByAuthors(
         @RequestParam authorIds: List<Long>,
@@ -31,7 +30,9 @@ class BookController(
     }
 
     @PostMapping
-    fun postBook(@RequestBody request: BookRequest): ResponseEntity<BookResponse> {
+    fun postBook(
+        @RequestBody request: BookRequest,
+    ): ResponseEntity<BookResponse> {
         val book = bookService.createBook(request.toBook())
 
         return ResponseEntity.ok(book.toResponse())
@@ -40,7 +41,7 @@ class BookController(
     @PutMapping("/{id}")
     fun putBook(
         @PathVariable id: Long,
-        @RequestBody request: BookRequest
+        @RequestBody request: BookRequest,
     ): ResponseEntity<BookResponse> {
         val book = bookService.updateBook(id, request.toBook())
 

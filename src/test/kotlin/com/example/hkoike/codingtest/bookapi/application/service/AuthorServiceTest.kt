@@ -11,13 +11,11 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class AuthorServiceTest {
-
     private val authorRepository: AuthorRepository = mockk()
     private val authorService = AuthorService(authorRepository)
 
     @Nested
     inner class CreateAuthor {
-
         @Test
         fun `正常に作成できる`() {
             val input =
@@ -40,11 +38,12 @@ class AuthorServiceTest {
         @Test
         fun `生年月日が未来日だと例外`() {
             val future = LocalDate.now().plusDays(1)
-            val author = Author(
-                id = 0L,
-                name = "author",
-                birthDate = future,
-            )
+            val author =
+                Author(
+                    id = 0L,
+                    name = "author",
+                    birthDate = future,
+                )
 
             assertThrows(IllegalArgumentException::class.java) {
                 authorService.createAuthor(author)
@@ -57,7 +56,6 @@ class AuthorServiceTest {
 
     @Nested
     inner class UpdateAuthor {
-
         @Test
         fun `著者を更新できる`() {
             val existing =

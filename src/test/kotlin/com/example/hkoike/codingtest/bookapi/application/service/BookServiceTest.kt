@@ -6,17 +6,16 @@ import com.example.hkoike.codingtest.bookapi.domain.model.PublicationStatus
 import com.example.hkoike.codingtest.bookapi.domain.repository.BookRepository
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import java.time.LocalDate
 import kotlin.test.assertTrue
 
 class BookServiceTest {
-
     private val bookRepository: BookRepository = mockk()
     private val bookService = BookService(bookRepository)
 
@@ -25,14 +24,15 @@ class BookServiceTest {
         @ParameterizedTest
         @ValueSource(ints = [0, 1, 1000])
         fun `正常な場合は作成される`(price: Int) {
-            val book = Book(
-                id = 0L,
-                title = "valid book",
-                price = price,
-                status = PublicationStatus.UNPUBLISHED,
-                publishedAt = LocalDate.now(),
-                authorIds = listOf(1L),
-            )
+            val book =
+                Book(
+                    id = 0L,
+                    title = "valid book",
+                    price = price,
+                    status = PublicationStatus.UNPUBLISHED,
+                    publishedAt = LocalDate.now(),
+                    authorIds = listOf(1L),
+                )
 
             val saved = book.copy(id = 10L)
             every { bookRepository.save(any()) } returns saved
@@ -45,14 +45,15 @@ class BookServiceTest {
         @ParameterizedTest
         @ValueSource(ints = [-999, -1])
         fun `priceがマイナスの場合は例外を投げる`(price: Int) {
-            val book = Book(
-                id = 0L,
-                title = "test",
-                price = price,
-                status = PublicationStatus.UNPUBLISHED,
-                publishedAt = LocalDate.now(),
-                authorIds = listOf(1L),
-            )
+            val book =
+                Book(
+                    id = 0L,
+                    title = "test",
+                    price = price,
+                    status = PublicationStatus.UNPUBLISHED,
+                    publishedAt = LocalDate.now(),
+                    authorIds = listOf(1L),
+                )
 
             assertThrows(IllegalArgumentException::class.java) {
                 bookService.createBook(book)
@@ -61,14 +62,15 @@ class BookServiceTest {
 
         @Test
         fun `authorが0の場合は例外を投げる`() {
-            val book = Book(
-                id = 0L,
-                title = "no author",
-                price = 1000,
-                status = PublicationStatus.UNPUBLISHED,
-                publishedAt = LocalDate.now(),
-                authorIds = emptyList(),
-            )
+            val book =
+                Book(
+                    id = 0L,
+                    title = "no author",
+                    price = 1000,
+                    status = PublicationStatus.UNPUBLISHED,
+                    publishedAt = LocalDate.now(),
+                    authorIds = emptyList(),
+                )
 
             assertThrows(IllegalArgumentException::class.java) {
                 bookService.createBook(book)
@@ -80,14 +82,15 @@ class BookServiceTest {
     inner class ChangeStatus {
         @Test
         fun `未出版から出版済みへの変更は許可される`() {
-            val existing = Book(
-                id = 1L,
-                title = "draft",
-                price = 1000,
-                status = PublicationStatus.UNPUBLISHED,
-                publishedAt = LocalDate.now(),
-                authorIds = listOf(1L),
-            )
+            val existing =
+                Book(
+                    id = 1L,
+                    title = "draft",
+                    price = 1000,
+                    status = PublicationStatus.UNPUBLISHED,
+                    publishedAt = LocalDate.now(),
+                    authorIds = listOf(1L),
+                )
             every { bookRepository.findById(1L) } returns existing
 
             val updateRequest = existing.copy(status = PublicationStatus.PUBLISHED)
@@ -100,14 +103,15 @@ class BookServiceTest {
 
         @Test
         fun `出版済みの本を未出版に戻そうとすると例外`() {
-            val existing = Book(
-                id = 2L,
-                title = "published",
-                price = 1000,
-                status = PublicationStatus.PUBLISHED,
-                publishedAt = LocalDate.now(),
-                authorIds = listOf(1L),
-            )
+            val existing =
+                Book(
+                    id = 2L,
+                    title = "published",
+                    price = 1000,
+                    status = PublicationStatus.PUBLISHED,
+                    publishedAt = LocalDate.now(),
+                    authorIds = listOf(1L),
+                )
 
             every { bookRepository.findById(2L) } returns existing
 
@@ -124,24 +128,25 @@ class BookServiceTest {
         fun `authorsに紐づく本が複数存在する場合は全て返す`() {
             val authorIds = listOf(1L, 2L)
 
-            val books = listOf(
-                Book(
-                    id = 1L,
-                    title = "book1",
-                    price = 1000,
-                    status = PublicationStatus.UNPUBLISHED,
-                    publishedAt = LocalDate.now(),
-                    authorIds = listOf(1L),
-                ),
-                Book(
-                    id = 2L,
-                    title = "book2",
-                    price = 2000,
-                    status = PublicationStatus.PUBLISHED,
-                    publishedAt = LocalDate.now(),
-                    authorIds = listOf(2L, 3L),
-                ),
-            )
+            val books =
+                listOf(
+                    Book(
+                        id = 1L,
+                        title = "book1",
+                        price = 1000,
+                        status = PublicationStatus.UNPUBLISHED,
+                        publishedAt = LocalDate.now(),
+                        authorIds = listOf(1L),
+                    ),
+                    Book(
+                        id = 2L,
+                        title = "book2",
+                        price = 2000,
+                        status = PublicationStatus.PUBLISHED,
+                        publishedAt = LocalDate.now(),
+                        authorIds = listOf(2L, 3L),
+                    ),
+                )
 
             every { bookRepository.findByAuthorIds(authorIds) } returns books
 
