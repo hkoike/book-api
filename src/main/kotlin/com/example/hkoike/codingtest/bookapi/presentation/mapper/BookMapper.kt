@@ -7,23 +7,20 @@ import com.example.hkoike.codingtest.bookapi.presentation.dto.BookResponse
 import java.time.LocalDate
 
 object BookMapper {
-    fun BookRequest.toBook(id: Long = 0L): Book {
-        val copiedPublishedAt =
-            if (publishedAt == null && status == PublicationStatus.PUBLISHED) {
-                LocalDate.now()
-            } else {
-                publishedAt
-            }
-
-        return Book(
+    fun BookRequest.toBook(id: Long = 0L): Book =
+        Book(
             id = id,
             title = title,
             price = price,
             status = status,
-            publishedAt = copiedPublishedAt,
+            publishedAt =
+                if (publishedAt == null && status == PublicationStatus.PUBLISHED) {
+                    LocalDate.now()
+                } else {
+                    publishedAt
+                },
             authorIds = authorIds,
         )
-    }
 
     fun Book.toResponse(): BookResponse =
         BookResponse(

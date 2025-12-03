@@ -36,6 +36,8 @@ class AuthorController(
     ): ResponseEntity<AuthorResponse> {
         val author = AuthorMapper.toAuthor(request, id)
         val updated = authorService.updateAuthor(id, author)
-        return ResponseEntity.ok(AuthorMapper.toResponse(updated))
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(AuthorMapper.toResponse(updated))
     }
 }
